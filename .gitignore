@@ -1,0 +1,10 @@
+/target
+.idea
+Cargo.lock
+*.dump
+src/lkql_wrapper.rs
+
+lua_jit/src/*.o
+lua_jit/src/*.so
+lua_jit/src/*.a
+lua_jit/src/host/*.o

@@ -1,0 +1,13 @@
+[package]
+name = "lkql_jit"
+version = "0.1.0"
+edition = "2021"
+authors = ["Hugo G. <guerrier@adacore.com>"]
+
+[dependencies]
+clap = { version = "3.2.15", features = ["derive"] }
+nano-leb128 = "0.1.0"
+widestring = "1.0.2"
+
+[build-dependencies]
+bindgen = "0.60.1"
