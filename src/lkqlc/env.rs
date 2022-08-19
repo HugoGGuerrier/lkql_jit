@@ -154,22 +154,22 @@ impl CompilationEnv {
     }
 
     /// Get the slot for the expression result
-    pub fn get_expr_result(&self) -> u8 {
+    pub fn get_expr_slot(&self) -> Option<u8> {
         self.local_env_stack.first().unwrap().expr_result_slot
     }
 
     /// Set the expression result slot
-    pub fn set_expr_result(&mut self, slot: u8) {
+    pub fn set_expr_slot(&mut self, slot: Option<u8>) {
         self.local_env_stack.first_mut().unwrap().expr_result_slot = slot;
     }
 
     /// Get the slot to return
-    pub fn get_return_slot(&self) -> u8 {
+    pub fn get_return_slot(&self) -> Option<u8> {
         self.local_env_stack.first().unwrap().return_slot
     }
 
     /// Set the return slot
-    pub fn set_return_slot(&mut self, slot: u8) {
+    pub fn set_return_slot(&mut self, slot: Option<u8>) {
         self.local_env_stack.first_mut().unwrap().return_slot = slot;
     }
 
@@ -234,8 +234,8 @@ pub struct LocalEnv {
 
     string_constant_cache: HashMap<String, u16>, // The cache that goes from the String to the constant index
 
-    expr_result_slot: u8, // The slot to put the result of the current expression in
-    return_slot: u8, // The slot to return at the end of the fun (if -1 return nothing)
+    expr_result_slot: Option<u8>, // The slot to put the result of the current expression in
+    return_slot: Option<u8>, // The slot to return at the end of the fun (if -1 return nothing)
 
     upvalues: HashMap<String, u8>, // This map goes from the var name to the upvalue index
 
@@ -259,8 +259,8 @@ impl LocalEnv {
 
             string_constant_cache: HashMap::new(),
 
-            expr_result_slot: 0xFF,
-            return_slot: 0xFF,
+            expr_result_slot: None,
+            return_slot: None,
 
             upvalues: HashMap::new(),
 
@@ -276,7 +276,7 @@ impl LocalEnv {
     /// Finalize the local environment just before pushing it in the program
     fn finalize(&mut self) {
         // Return the result of the function TODO push it into the IR
-        if self.return_slot == 0xFF {
+        if self.return_slot.is_none() {
             self.ir.push(IRInstruction::AD(IRInstAD::new(
                 RET0,
                 IRArg::Slot(0),
@@ -285,7 +285,7 @@ impl LocalEnv {
         } else {
             self.ir.push(IRInstruction::AD(IRInstAD::new(
                 RET1,
-                IRArg::Slot(self.return_slot),
+                IRArg::Slot(self.return_slot.unwrap()),
                 IRArg::Literal(2)
             )));
         }

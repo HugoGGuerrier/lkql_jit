@@ -97,8 +97,11 @@ impl IRArg {
             IRArg::None => 0,
             IRArg::Slot(slot) => *slot,
             IRArg::Upvalue(uv) => *uv,
-            IRArg::Literal(lit) => *lit as u8,
-            IRArg::SignedLiteral(_) => panic!("Should not reach here"),
+            IRArg::Literal(lit) => {
+                if *lit > 0xFF { panic!("Cannot encode the literal {} in a 8 bit operand", *lit) }
+                else { *lit as u8 }
+            }
+            IRArg::SignedLiteral(_) => panic!("Cannot encode a signed literal in a 8 bit operand"),
             IRArg::Primitive(prim) => {
                 match prim {
                     Primitive::Nil => 0,
@@ -108,23 +111,23 @@ impl IRArg {
             }
             IRArg::TNewLiteral(_, _) => panic!("Should not reach here"),
             IRArg::Num(num) => {
-                if *num > 0xFF { panic!("Cannot encode num constant with index {} in a 8 bit operand", num) }
+                if *num > 0xFF { panic!("Cannot encode num constant with index {} in a 8 bit operand", *num) }
                 else { *num as u8 }
             }
             IRArg::Str(str) => {
-                if *str > 0xFF { panic!("Cannot encode str constant with index {} in a 8 bit operand", str) }
+                if *str > 0xFF { panic!("Cannot encode str constant with index {} in a 8 bit operand", *str) }
                 else { *str as u8 }
             }
             IRArg::Tab(tab) => {
-                if *tab > 0xFF { panic!("Cannot encode tab constant with index {} in a 8 bit operand", tab) }
+                if *tab > 0xFF { panic!("Cannot encode tab constant with index {} in a 8 bit operand", *tab) }
                 else { *tab as u8 }
             }
             IRArg::Func(func) => {
-                if *func > 0xFF { panic!("Cannot encode func constant with index {} in a 8 bit operand", func) }
+                if *func > 0xFF { panic!("Cannot encode func constant with index {} in a 8 bit operand", *func) }
                 else { *func as u8 }
             }
             IRArg::CData(cdata) => {
-                if *cdata > 0xFF { panic!("Cannot encode cdata constant with index {} in a 8 bit operand", cdata) }
+                if *cdata > 0xFF { panic!("Cannot encode cdata constant with index {} in a 8 bit operand", *cdata) }
                 else { *cdata as u8 }
             }
             IRArg::Jump(_) => panic!("Not handled IR jump"),
